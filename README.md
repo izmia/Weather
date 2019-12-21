@@ -5,20 +5,22 @@ A simple project used to illustrate clean architecture and testing in Android wi
 The app shows a list of city from user local db. Upon tapping on one of the cities, a detail view is shown with further a weather list from [worldweatheronline](www.worldweatheronline.com/).
 
 
-
 ### Architecture
 <div style="text-align:center">
 <img src="/images/architecture.png" alt="Architecture Diagram" width="400" />
 </div>
 
-The drawn diagram above illustrates how the Architecture for the App works. Essentially this is a slimmed down version of MVI. The reason why I use this architecture was to get more experiences to find out different aspects of this approach.
+The drawn diagram above illustrates how the Architecture for the App works. Essentially this is a slimmed down version of MVI. 
+
 There are three layers to the app, namely the UI, View Model, and Repository layers. Users send an Intent through the View Model layer which are later emitted by a State. The State is emitted via a LiveData, and is all the UI layer needs to do is observe it in order to figure out what to display.
 The View Model layer is (importantly) unidirectional, and takes intents, maps them to actions, performs the actions, and returns results. Those results are finally mapped to the State.
 These mappings occur in an Interpreter which exists in each step along the way. 
 
-
 The Repository layer contains a Repository which is the logic of how the app gets data. Data is initially loaded from the network, but subsequently saved to a Database until that data is no longer viable. At the present there is no invalidation logic. 
 The UI layer is an Activity with multiple fragments.
+
+- The reason why I use this architecture was to get more experiences to find out different aspects of this approach.
+
 
 ## Installing and Testing
 
@@ -49,10 +51,12 @@ Unit tests work the same way:
 * [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)  - managing background threads with simplified code and reducing needs for callbacks.
 * [DataBinding](https://developer.android.com/topic/libraries/data-binding/) - allows you to bind UI components in your layouts to data sources in your app using a declarative format rather than programmatically.
 
+
 ## License
 
-Copyright (C) 2019 Evren Coşkun
+    Copyright (C) 2019 Evren Coşkun
+    
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
