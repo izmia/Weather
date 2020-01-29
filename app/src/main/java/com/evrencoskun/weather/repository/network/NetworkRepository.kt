@@ -19,14 +19,13 @@ package com.evrencoskun.weather.repository.network
 
 import com.evrencoskun.weather.repository.Repository
 import com.evrencoskun.weather.repository.network.model.ApiResponse
-import kotlinx.coroutines.Deferred
 import org.koin.standalone.KoinComponent
 import retrofit2.Response
 
 /**
  * Repository for communicating with the Network via the JsonPlaceHolder API
  */
-open class NetworkRepository constructor(private val service: JsonPlaceholderService) : KoinComponent {
+open class NetworkRepository constructor(private val service: WeatherService) : KoinComponent {
 
     open suspend fun getWeather(
         cityName: String,
@@ -40,33 +39,29 @@ open class NetworkRepository constructor(private val service: JsonPlaceholderSer
      * It allows to return proper function considering the params.
      */
     suspend fun <T, R> processData(
-        // First param is Retrofit response within 'Deffered' object of Corountine.
-        deferredData: Deferred<Response<T>>,
+        // First param is Retrofit response object of Corountine.
+        data: Response<T>,
         // Second param is a function whose parameter is T data and its return type is R.
         success: suspend (T) -> R,
         // Third param is also function that has a String parameter and its return type is also R.
         error: (String) -> R
     ): R {
-        val data: Response<T>
 
         try {
-            // Wait for the whole data.
-            data = deferredData.await()
+            val body = data.body()
+
+            // Check whether getting data process is successful or not.
+            return if (data.isSuccessful && body != null) {
+                // if it is call & return success function with 'body' parameter.
+                success(body)
+            } else {
+                // if not, call and return error function with error message.
+                // ${javaClass.simpleName} gives the class name.
+                error("${javaClass.simpleName}: Fetch Data Unsuccessful")
+            }
         } catch (e: Exception) {
             // If something goes wrong, call & return error function
             return error("${javaClass.simpleName}: ${e.message}")
-        }
-
-        val body = data.body()
-
-        // Check whether getting data process is successful or not.
-        return if (data.isSuccessful && body != null) {
-            // if it is call & return success function with 'body' parameter.
-            success(body)
-        } else {
-            // if not, call and return error function with error message.
-            // ${javaClass.simpleName} gives the class name.
-            error("${javaClass.simpleName}: Fetch Data Unsuccessful")
         }
     }
 }

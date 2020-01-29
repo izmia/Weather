@@ -17,7 +17,6 @@
 
 package com.evrencoskun.weather.repository.network
 
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -28,12 +27,11 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 class RetrofitWrapper {
     companion object {
-        fun getJsonPlaceholderService(): JsonPlaceholderService = Retrofit.Builder()
-            .baseUrl(JsonPlaceholderService.BASE_URL)
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+        fun getWeatherService(): WeatherService = Retrofit.Builder()
+            .baseUrl(WeatherService.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(buildLoggingClient())
-            .build().create(JsonPlaceholderService::class.java)
+            .build().create(WeatherService::class.java)
 
         private fun buildLoggingClient(): OkHttpClient {
             val loggingInterceptor = HttpLoggingInterceptor()

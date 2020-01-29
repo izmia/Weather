@@ -20,6 +20,7 @@ package com.evrencoskun.weather.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.evrencoskun.weather.util.CoroutineContextProvider
 import com.evrencoskun.weather.viewmodel.mvi.Action
 import com.evrencoskun.weather.viewmodel.mvi.Intent
@@ -27,6 +28,7 @@ import com.evrencoskun.weather.viewmodel.mvi.Result
 import com.evrencoskun.weather.viewmodel.mvi.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.standalone.KoinComponent
 import kotlin.coroutines.CoroutineContext
 
@@ -45,8 +47,7 @@ class MainViewModel constructor(
         get() = contextPool.io
 
     private val _state: MutableLiveData<State> = MutableLiveData()
-    val state: LiveData<State>
-        get() = _state
+    val state: LiveData<State> = _state
 
 
     init {
@@ -60,7 +61,7 @@ class MainViewModel constructor(
      * The basic idea: [ Intents -> Actions -> (Action taken) -> Result -> State ]
      */
     fun sendIntent(intent: Intent) {
-        launch(contextPool.io) {
+        viewModelScope.launch(contextPool.io) {
             intentInterpreter.interpret(intent) { action ->
                 actionInterpreter.interpret(action) { result ->
                     resultInterpreter.interpret(result, ::changeState)
@@ -70,7 +71,8 @@ class MainViewModel constructor(
     }
 
     private suspend fun changeState(nextState: State) {
-        launch(contextPool.main) {
+        // Use main thread to update the LiveData properly
+        withContext(contextPool.main) {
             _state.value = nextState
         }
     }

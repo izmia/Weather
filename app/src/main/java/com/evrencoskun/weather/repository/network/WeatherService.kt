@@ -18,7 +18,6 @@
 package com.evrencoskun.weather.repository.network
 
 import com.evrencoskun.weather.repository.network.model.ApiResponse
-import kotlinx.coroutines.Deferred
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -27,7 +26,7 @@ import retrofit2.http.Query
  * Sample link
  * http://api.worldweatheronline.com/premium/v1/weather.ashx?key=0cbb7a26bd914b119c434021192711&q=London&format=json&num_of_days=5
  */
-interface JsonPlaceholderService {
+interface WeatherService {
     companion object {
         const val BASE_URL = "http://api.worldweatheronline.com"
         // Keys
@@ -38,17 +37,17 @@ interface JsonPlaceholderService {
         const val NUM_OF_DAYS = "num_of_days"
         // Defaults values
         const val JSON_FORMAT = "json"
-        const val TOKEN = "0cbb7a26bd914b119c434021192711"
+        const val TOKEN = "8a71faba76584b71af6150602202401"
         const val DEFAULT_NUM_OF_DAYS = "5"
     }
 
 
     @GET(URL_PREFIX)
-    fun getWeather(
+    suspend fun getWeather(
         @Query(Q) q: String,
         @Query(KEY) key: String = TOKEN,
         @Query(FORMAT) format: String = JSON_FORMAT,
         @Query(NUM_OF_DAYS) num_of_day: String = DEFAULT_NUM_OF_DAYS
-    ): Deferred<Response<ApiResponse>>
+    ): Response<ApiResponse>
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 12/21/19 3:29 PM Evren Coşkun
+ * Copyright (c) 12/23/19 4:59 PM Evren Coşkun
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,11 @@ package com.evrencoskun.weather.mocks.database
 import com.evrencoskun.weather.repository.database.entity.City
 import com.evrencoskun.weather.repository.database.entity.Weather
 
-class MockEntity {
-    companion object {
+class MockEntityEnst {
+    companion object{
         val mockCity = City(name = "Istanbul")
         val mockCityList = createMockCityList()
         val mockWeatherList = createMockWeatherList()
-
 
         private fun createMockCityList(): List<City> {
             return listOf(

@@ -42,7 +42,7 @@ class Application : Application() {
             single { Intent.IntentInterpreter() }
             single { Action.ActionInterpreter(get()) }
             single { Result.ResultInterpreter() }
-            single { RetrofitWrapper.getJsonPlaceholderService() }
+            single { RetrofitWrapper.getWeatherService() }
             single { NetworkRepository(get()) }
             single { DatabaseRepository(DatabaseFactory(applicationContext).createDatabase()) }
             single { Repository(get(), get(), get()) }

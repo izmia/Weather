@@ -28,7 +28,23 @@ import org.koin.standalone.KoinComponent
  * of the app
  */
 class DatabaseFactory constructor(private val context: Context) : KoinComponent {
+    // For Singleton instantiation
+    @Volatile
+    private var instance: Database? = null
+
+
+    private fun buildDatabase(context: Context): Database {
+        return Room.databaseBuilder(context, Database::class.java, DATABASE_NAME).build()
+    }
+
     fun createDatabase(): Database {
-        return Room.databaseBuilder(context, Database::class.java, "weather-db-test1").build()
+        return instance ?: synchronized(this) {
+            instance
+                ?: buildDatabase(
+                    context
+                ).also { instance = it }
+        }
     }
 }
+
+private const val DATABASE_NAME = "weather-db-test1"

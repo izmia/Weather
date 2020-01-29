@@ -23,7 +23,6 @@ import com.evrencoskun.weather.repository.Repository
 import com.evrencoskun.weather.repository.network.model.ApiResponse
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import org.junit.Assert
@@ -42,7 +41,7 @@ class NetworkRepositoryTest {
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
 
-    private val service = mock<JsonPlaceholderService>()
+    private val service = mock<WeatherService>()
     private val networkRepository = NetworkRepository(service)
     private val apiResponse = mock<ApiResponse>()
 
@@ -51,7 +50,7 @@ class NetworkRepositoryTest {
     fun `when processing network data which is getting weather list in successfully, call success `() {
         runBlocking {
             whenever(service.getWeather(MockEntity.mockCity.id)).thenReturn(
-                CompletableDeferred((Response.success(apiResponse)))
+                Response.success(apiResponse)
             )
 
             val result = networkRepository.processData(
@@ -67,17 +66,21 @@ class NetworkRepositoryTest {
     @Test
     fun `when processing database data which is fetched unsuccessfully, call error`() {
 
-        whenever(service.getWeather(MockEntity.mockCity.id)).thenReturn(
-            CompletableDeferred((Response.error(404, ResponseBody.create(null, ""))))
-        )
-
         runBlocking {
+
+            whenever(service.getWeather(MockEntity.mockCity.id)).thenReturn(
+                (Response.error(404, ResponseBody.create(null, "")))
+            )
+
             val result = networkRepository.processData(
                 service.getWeather(MockEntity.mockCity.id),
                 { Repository.RequestResult.Success },
                 { Repository.RequestResult.Error(it) })
 
-            Assert.assertEquals(Repository.RequestResult.Error("NetworkRepository: Fetch Data Unsuccessful"), result)
+            Assert.assertEquals(
+                Repository.RequestResult.Error("NetworkRepository: Fetch Data Unsuccessful"),
+                result
+            )
         }
     }
 }
