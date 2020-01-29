@@ -36,7 +36,7 @@ interface WeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveCityList(cityList: List<City>)
 
-    @Query("SELECT * FROM city ORDER BY id DESC")
+    @Query("SELECT * FROM city")
     suspend fun getCityList(): List<City>
 
 
