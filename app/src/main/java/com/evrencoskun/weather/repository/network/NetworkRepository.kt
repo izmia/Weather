@@ -40,7 +40,7 @@ open class NetworkRepository constructor(private val service: WeatherService) : 
      */
     suspend fun <T, R> processData(
         // First param is Retrofit response object of Corountine.
-        data: Response<T>,
+        response: Response<T>,
         // Second param is a function whose parameter is T data and its return type is R.
         success: suspend (T) -> R,
         // Third param is also function that has a String parameter and its return type is also R.
@@ -48,16 +48,27 @@ open class NetworkRepository constructor(private val service: WeatherService) : 
     ): R {
 
         try {
-            val body = data.body()
-
             // Check whether getting data process is successful or not.
-            return if (data.isSuccessful && body != null) {
-                // if it is call & return success function with 'body' parameter.
-                success(body)
+            if (response.data.isSuccessful) {
+                val body = response.body()
+
+                // 204 is the Http response code for "no content"
+                if (body == null || response.code() == 204) {
+                    error("${javaClass.simpleName}: Data is empty.")
+                } else if (response.code() == 401) {
+                    // 401 is the Http response code for the client side error
+                    error("${javaClass.simpleName}: 401 Unauthorized. Token may be invalid.")
+                } else {
+                    success(body)
+                }
             } else {
-                // if not, call and return error function with error message.
-                // ${javaClass.simpleName} gives the class name.
-                error("${javaClass.simpleName}: Fetch Data Unsuccessful")
+                val msg = response.errorBody()?.string()
+                val errorMessage = if (msg.isNullOrEmpty()) {
+                    response.message()
+                } else {
+                    msg
+                }
+                return error(errorMsg ?: "${javaClass.simpleName}: Fetch Data Unsuccessful")
             }
         } catch (e: Exception) {
             // If something goes wrong, call & return error function
